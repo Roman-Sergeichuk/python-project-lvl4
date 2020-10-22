@@ -136,9 +136,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGIN_REDIRECT_URL = '/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'tasks/static'),
-# )
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'tasks/static'),
+)
 
 ROLLBAR = {
     'access_token': 'POST_SERVER_ITEM_ACCESS_TOKEN',
