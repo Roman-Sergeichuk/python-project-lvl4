@@ -141,8 +141,8 @@ STATICFILES_DIRS = (
 )
 
 ROLLBAR = {
-    'access_token': 'POST_SERVER_ITEM_ACCESS_TOKEN',
+    'access_token': os.getenv('ROLLBAR_ACCESS_TOKEN'),
     'environment': 'development' if DEBUG else 'production',
     'branch': 'master',
-    'root': '/absolute/path/to/code/root',
+    'root': BASE_DIR,
 }
