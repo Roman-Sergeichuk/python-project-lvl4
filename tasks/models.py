@@ -2,14 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+NEW = 'Новая'
+
+
 class TaskStatus(models.Model):
-    # STATUS_CHOICES = (
-    #     ('NEW', 'Новая'),
-    #     ('IN_THE_PIPELINE', 'В работе'),
-    #     ('ON_TESTING', 'На тестировании'),
-    #     ('COMPLETED', 'Завершено'),
-    # )
-    name = models.CharField(max_length=50)
+
+    name = models.CharField(max_length=50, verbose_name='Статус', help_text='Введите статус')
 
     def __str__(self):
         return self.name
@@ -24,12 +22,12 @@ class Tag(models.Model):
 
 class Task(models.Model):
 
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    status = models.ForeignKey(TaskStatus, on_delete=models.CASCADE)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    assigned_to = models.ForeignKey(User, related_name='assigned_to', on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag)
+    name = models.CharField(max_length=200, verbose_name='Название')
+    description = models.TextField(blank=True, verbose_name='Описание')
+    status = models.ForeignKey(TaskStatus, on_delete=models.CASCADE, verbose_name='Статус')
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор задачи')
+    assigned_to = models.ForeignKey(User, related_name='assigned_to', on_delete=models.CASCADE, verbose_name='Исполнитель')
+    tags = models.ManyToManyField(Tag, verbose_name='Теги')
 
     def __str__(self):
         return self.name

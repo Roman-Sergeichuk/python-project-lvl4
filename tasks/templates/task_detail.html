@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="card text-white bg-secondary mb-3">
+<div class="card text-black mb-3">
   <div class="card-header">
     <div class="row">
-      <div class="col-md-6"><div class="text-left"><b><a href="{% url 'task_detail' task.id %}">{{ task.name }}</a></b>
+      <div class="col-md-6"><div class="text-left"><b>{{ task.name }}</b>
         <span class="badge badge-dark">{{ task.status }}</span>
       </div></div>
       <div class="col-md-6"><div class="text-right"><a href="{% url 'update_task' task.id %}" class="badge badge-primary">Редактировать</a>
@@ -18,7 +18,8 @@
   <div class="card-header">
     <div class="row">
       <div class="col-md-6"><div class="text-left"><span class="badge badge-secondary">
-        From {{ task.creator }} to {{ task.assigned_to }}
+        <p class="text-left">Создал: {{ task.creator }} </p>
+        <p class="text-left">Исполнитель: {{ task.assigned_to }}</p>
       </span></div></div>
       <div class="col-md-6"><div class="text-right">
         {% for tag in task.tags.all %}

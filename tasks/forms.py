@@ -6,7 +6,6 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ('name', 'description', 'status', 'assigned_to', 'tags')
-        # fields = ('name', 'description', 'status', 'assigned_to', 'tags')
         widgets = {
             'tags': forms.SelectMultiple(),
         }

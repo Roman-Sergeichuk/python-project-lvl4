@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+
+<div class="card-header">
+    <a href="{% url 'create_tag' %}" class="btn btn-outline-primary">Добавить тег</a>
+</div>
+<div class="row"><div class="text-left">
+        {% for tag in tags %}
+        <span class="badge badge-dark">{{tag.name}}</span>
+        {% endfor %}
+</div></div>
+{% endblock %}

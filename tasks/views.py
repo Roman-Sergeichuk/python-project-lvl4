@@ -1,61 +1,47 @@
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from tasks.forms import TaskStatusForm, TaskForm, TagForm
-from tasks.models import Task
+from tasks.models import Task, TaskStatus, Tag
 from django.views import generic
 from tasks.filters import TaskFilter
+from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+
+
+NEW = 'Новая'
 
 
 def index(request):
     return render(request, 'index.html')
 
 
+@login_required
 def create_task(request):
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TaskForm(request.POST, initial={'status': get_object_or_404(TaskStatus, name=NEW)})
         if form.is_valid():
             task = form.save(commit=False)
             task.creator = request.user
             task.save()
             form.save_m2m()
-            return render(request, 'index.html')
+            return redirect(reverse('task_detail', kwargs={'pk': task.pk}))
     else:
-        form = TaskForm()
+        form = TaskForm(initial={'status': get_object_or_404(TaskStatus, name=NEW)})
         return render(request, 'create_task.html', {'form': form})
 
 
-class TaskView(generic.DetailView):
-    model = Task
-    template_name = "task_detail.html"
+@login_required
+def task_detail(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    return render(request, 'task_detail.html', {'task': task})
 
 
+@login_required
 def task_list(request):
     f = TaskFilter(request.GET, queryset=Task.objects.all())
     return render(request, 'task_list.html', {'filter': f})
 
 
-class IndexView(generic.ListView):
-    template_name = 'index.html'
-    context_object_name = 'task_list'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['filter'] = TaskFilter(
-            self.request.GET,
-            queryset=self.get_queryset(),
-        )
-        return context
-
-    def get_queryset(self):
-        if self.request.GET:
-            parameters = self.request.GET
-            filters = {}
-            for key, value in parameters.items():
-                if value:
-                    filters[key] = value
-            return Task.objects.filter(**filters)
-        return Task.objects.all()
-
-
+@login_required
 def update_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     if request.method == 'POST':
@@ -65,38 +51,73 @@ def update_task(request, pk):
             task.creator = request.user
             task.save()
             form.save_m2m()
-            return render(request, 'index.html')
+            return redirect(reverse('task_detail', kwargs={'pk': task.pk}))
     else:
         form = TaskForm(instance=task)
         return render(request, 'update_task.html', {'form': form})
 
 
+@login_required
 def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.delete()
-    # return redirect(reverse('user_readings_list', kwargs={'pk': user_id}))
-    return render(request, 'index.html')
+    return redirect(reverse('task_list'))
 
 
+@login_required
 def create_status(request):
     if request.method == 'POST':
         form = TaskStatusForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.save()
-            return render(request, 'index.html')
+            status = form.save(commit=False)
+            status.save()
+            return redirect(reverse('status_list'))
     else:
         form = TaskStatusForm()
         return render(request, 'create_status.html', {'form': form})
 
 
+@login_required
+def status_list(request):
+    statuses = TaskStatus.objects.all()
+    return render(request, 'status_list.html', {'statuses': statuses})
+
+
+@login_required
+def update_status(request, pk):
+    status = get_object_or_404(TaskStatus, pk=pk)
+    if request.method == 'POST':
+        form = TaskStatusForm(request.POST, instance=status)
+        if form.is_valid():
+            status = form.save(commit=False)
+            status.save()
+            return redirect(reverse('status_list'))
+    else:
+        form = TaskStatusForm(instance=status)
+        return render(request, 'update_status.html', {'form': form})
+
+
+@login_required
+def delete_status(request, pk):
+    status = get_object_or_404(TaskStatus, pk=pk)
+    status.delete()
+    return redirect(reverse('status_list'))
+
+
+@login_required
 def create_tag(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
         if form.is_valid():
             tag = form.save(commit=False)
             tag.save()
-            return render(request, 'index.html')
+            return redirect(reverse('tag_list'))
     else:
         form = TaskStatusForm()
         return render(request, 'create_tag.html', {'form': form})
+
+
+@login_required
+def tag_list(request):
+    tags = Tag.objects.all()
+    return render(request, 'tag_list.html', {'tags': tags})
