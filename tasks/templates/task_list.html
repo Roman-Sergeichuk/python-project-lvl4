@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% block content %}
+
+    <form method="get">
+        {% bootstrap_form filter.form %}
+        <input type="submit" value="Найти">
+    </form>
+    {% for obj in filter.qs %}
+<a class="p-2 text-dark" href="{% url 'task_detail' obj.id %}">{{ obj.name }}</a> <br />
+    {% endfor %}
+{% endblock %}

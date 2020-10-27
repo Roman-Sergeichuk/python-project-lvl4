@@ -25,4 +25,5 @@ urlpatterns = [
     path('', include('tasks.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     url(r'^register/$', views.RegisterFormView.as_view(), name='register'),
+    # path('tasks/', include('tasks.urls')),
 ]
