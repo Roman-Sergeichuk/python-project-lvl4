@@ -2,8 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from tasks.forms import TaskStatusForm, TaskForm, TagForm
 from tasks.models import Task, TaskStatus, Tag
 from tasks.filters import TaskFilter
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
 NEW = 'Новая'
@@ -59,17 +61,24 @@ def delete_task(request, pk):
     return redirect(reverse('task_list'))
 
 
-@login_required
-def create_status(request):
-    if request.method == 'POST':
-        form = TaskStatusForm(request.POST)
-        if form.is_valid():
-            status = form.save(commit=False)
-            status.save()
-            return redirect(reverse('status_list'))
-    else:
-        form = TaskStatusForm()
-        return render(request, 'create_status.html', {'form': form})
+# @login_required
+# def create_status(request):
+#     if request.method == 'POST':
+#         form = TaskStatusForm(request.POST)
+#         if form.is_valid():
+#             status = form.save(commit=False)
+#             status.save()
+#             return redirect(reverse('status_list'))
+#     else:
+#         form = TaskStatusForm()
+#         return render(request, 'create_status.html', {'form': form})
+
+
+class TaskStatusCreate(LoginRequiredMixin, CreateView):
+    model = TaskStatus
+    fields = '__all__'
+    template_name = 'create_status.html'
+    success_url = reverse_lazy('status_list')
 
 
 @login_required
@@ -78,18 +87,30 @@ def status_list(request):
     return render(request, 'status_list.html', {'statuses': statuses})
 
 
-@login_required
-def update_status(request, pk):
-    status = get_object_or_404(TaskStatus, pk=pk)
-    if request.method == 'POST':
-        form = TaskStatusForm(request.POST, instance=status)
-        if form.is_valid():
-            status = form.save(commit=False)
-            status.save()
-            return redirect(reverse('status_list'))
-    else:
-        form = TaskStatusForm(instance=status)
-        return render(request, 'update_status.html', {'form': form})
+# @login_required
+# def update_status(request, pk):
+#     status = get_object_or_404(TaskStatus, pk=pk)
+#     if request.method == 'POST':
+#         form = TaskStatusForm(request.POST, instance=status)
+#         if form.is_valid():
+#             status = form.save(commit=False)
+#             status.save()
+#             return redirect(reverse('status_list'))
+#     else:
+#         form = TaskStatusForm(instance=status)
+#         return render(request, 'update_status.html', {'form': form})
+
+
+class TaskStatusUpdate(LoginRequiredMixin, UpdateView):
+    model = TaskStatus
+    fields = '__all__'
+    success_url = reverse_lazy('status_list')
+    template_name = 'update_status.html'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(TaskStatusUpdate, self).get_context_data(**kwargs)
+    #     context['task_statuses'] = TaskStatus.objects.all()
+    #     return context
 
 
 @login_required
@@ -99,17 +120,24 @@ def delete_status(request, pk):
     return redirect(reverse('status_list'))
 
 
-@login_required
-def create_tag(request):
-    if request.method == 'POST':
-        form = TagForm(request.POST)
-        if form.is_valid():
-            tag = form.save(commit=False)
-            tag.save()
-            return redirect(reverse('tag_list'))
-    else:
-        form = TaskStatusForm()
-        return render(request, 'create_tag.html', {'form': form})
+# @login_required
+# def create_tag(request):
+#     if request.method == 'POST':
+#         form = TagForm(request.POST)
+#         if form.is_valid():
+#             tag = form.save(commit=False)
+#             tag.save()
+#             return redirect(reverse('tag_list'))
+#     else:
+#         form = TaskStatusForm()
+#         return render(request, 'create_tag.html', {'form': form})
+
+
+class TagCreate(LoginRequiredMixin, CreateView):
+    model = Tag
+    fields = '__all__'
+    success_url = reverse_lazy('tag_list')
+    template_name = 'create_tag.html'
 
 
 @login_required

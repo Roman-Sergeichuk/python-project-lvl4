@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.shortcuts import reverse
 
 
 NEW = 'Новая'
@@ -12,12 +13,18 @@ class TaskStatus(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('task_status', args=[str(self.pk)])
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name='Тег')
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('task_status', args=[str(self.pk)])
 
 
 class Task(models.Model):
@@ -31,3 +38,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('task_status', args=[str(self.pk)])

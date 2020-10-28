@@ -53,10 +53,10 @@
 
   </nav>
       <a class="p-2 text-success" href="#">Привет, {{request.user.username}}</a>
-      <a class="btn btn-outline-primary" href="{% url 'logout' %}?next={{request.path}}">Выход</a>
+      <a class="btn btn-outline-primary" href="{% url 'logout' %}?next={% url 'login' %}">Выход</a>
   {% else %}
   <a class="btn btn-outline-primary" href="{% url 'login' %}">Войти</a>
-  <a class="btn btn-outline-primary" href="{% url 'register' %}?next={{request.path}}">Зарегистрироваться</a>
+  <a class="btn btn-outline-primary" href="{% url 'register' %}?next={% url 'login' %}">Зарегистрироваться</a>
   {% endif %}
 </div>
 
