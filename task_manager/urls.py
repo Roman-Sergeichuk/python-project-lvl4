@@ -16,14 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
-from django.views.generic import RedirectView
 from task_manager import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('tasks.urls')),
+    path('', views.index, name='index'),
     path('accounts/', include('django.contrib.auth.urls')),
     url(r'^register/$', views.RegisterFormView.as_view(), name='register'),
-    # path('tasks/', include('tasks.urls')),
+    path('tasks/', include('tasks.urls')),
 ]

@@ -7,7 +7,7 @@ NEW = 'Новая'
 
 class TaskStatus(models.Model):
 
-    name = models.CharField(max_length=50, verbose_name='Статус', help_text='Введите статус')
+    name = models.CharField(max_length=50, unique=True, verbose_name='Статус', help_text='Введите статус')
 
     def __str__(self):
         return self.name

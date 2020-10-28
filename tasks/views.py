@@ -9,10 +9,6 @@ from django.contrib.auth.decorators import login_required
 NEW = 'Новая'
 
 
-def index(request):
-    return render(request, 'index.html')
-
-
 @login_required
 def create_task(request):
     if request.method == 'POST':
