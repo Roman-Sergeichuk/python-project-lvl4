@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from tasks.forms import TaskStatusForm, TaskForm, TagForm
 from tasks.models import Task, TaskStatus, Tag
-from django.views import generic
 from tasks.filters import TaskFilter
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required

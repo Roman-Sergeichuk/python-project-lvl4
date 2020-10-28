@@ -26,4 +26,3 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ('name',)
-        # fields = ('name', 'description', 'status', 'assigned_to', 'tags')
