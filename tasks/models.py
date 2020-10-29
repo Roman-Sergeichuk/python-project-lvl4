@@ -14,7 +14,7 @@ class TaskStatus(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('task_status', args=[str(self.pk)])
+        return reverse('update_status', args=[str(self.pk)])
 
 
 class Tag(models.Model):
@@ -22,9 +22,6 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return reverse('task_status', args=[str(self.pk)])
 
 
 class Task(models.Model):
