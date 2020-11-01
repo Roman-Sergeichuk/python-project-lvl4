@@ -11,6 +11,26 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 NEW = 'Новая'
 
 
+class TaskCreate(LoginRequiredMixin, CreateView):
+    model = Task
+    fields = '__all__'
+    template_name = 'create_task.html'
+    success_url = reverse_lazy('task_list')
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(TaskCreate, self).get_initial(**kwargs)
+        initial['creator'] = self.request.user
+        initial['status'] = get_object_or_404(TaskStatus, name=NEW)
+        return initial
+
+
+class TaskUpdate(LoginRequiredMixin, UpdateView):
+    model = Task
+    fields = '__all__'
+    template_name = 'update_task.html'
+    success_url = reverse_lazy('task_list')
+
+
 @login_required
 def create_task(request):
     if request.method == 'POST':

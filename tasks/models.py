@@ -36,5 +36,5 @@ class Task(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse('task_status', args=[str(self.pk)])
+    # def get_absolute_url(self):
+    #     return reverse('task_detail', args=[str(self.pk)])
