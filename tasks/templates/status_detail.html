@@ -2,19 +2,14 @@
 {% load bootstrap4 %}
 {% block content %}
 
-<div class="card-header">
-    <a href="{% url 'create_status' %}" class="btn btn-outline-primary">Добавить статус</a>
-</div>
-    {% for status in statuses %}
+
 <div class="p-2 text-dark">
     <div class="col-md-6">
         <div class="text-left">
-            <br><a href="{% url 'status_detail' status.id %}">{{ status.name }}</a>
+        <br>{{ status.name }}
         </div>
         <a href="{% url 'update_status' status.id %}" class="badge badge-primary">Редактировать</a>
         <a href="{% url 'delete_status' status.id %}" class="badge badge-danger">Удалить</a>
     </div>
 </div>
-
-{% endfor %}
 {% endblock %}

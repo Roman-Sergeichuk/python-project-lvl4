@@ -107,6 +107,12 @@ def status_list(request):
     return render(request, 'status_list.html', {'statuses': statuses})
 
 
+@login_required
+def status_detail(request, pk):
+    status = get_object_or_404(TaskStatus, pk=pk)
+    return render(request, 'status_detail.html', {'status': status})
+
+
 # @login_required
 # def update_status(request, pk):
 #     status = get_object_or_404(TaskStatus, pk=pk)
