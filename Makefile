@@ -8,6 +8,11 @@ test:
 	@poetry run coverage run --source=task_manager --omit=*/migrations/* manage.py test --settings=task_manager.settings
 	@poetry run coverage xml
 
+selfcheck:
+	@poetry check
+
+check: selfcheck test lint
+
 deploy:
 	git push https://git.heroku.com/taskmanager-rs.git
 
