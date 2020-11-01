@@ -1,7 +1,5 @@
-test:
-  adapter: postgresql
-  encoding: utf8
-  database: hexlet
-  username: hello_django
-  password: hello_django
-  template: template0 # Required for UTF8 encoding
+postgresql: &postgresql
+adapter: postgresql
+username: foo
+password: bar
+database: testing_db
