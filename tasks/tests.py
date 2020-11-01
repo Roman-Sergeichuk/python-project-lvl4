@@ -1,9 +1,9 @@
-from django.test import TestCase
-from tasks.models import Tag, Task, TaskStatus
 from django.contrib.auth.models import User
+from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse, reverse_lazy
 
+from tasks.models import Tag, Task, TaskStatus
 
 REGISTRATION_DATA = {
     'username': 'test_user',
@@ -82,7 +82,7 @@ class TestStatusCRUD(TestCase):
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
-        status_delete_url = reverse(STATUS_DELETE_URL_NAME, args=[str(old_status.pk)])  # noqa: 501
+        status_delete_url = reverse(STATUS_DELETE_URL_NAME, args=[str(old_status.pk)])  # noqa: E501
         response = client.get(status_delete_url)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(len(TaskStatus.objects.all()), 0)

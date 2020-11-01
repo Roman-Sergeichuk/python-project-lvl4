@@ -1,4 +1,5 @@
 import django_filters
+
 from tasks.models import Task
 
 

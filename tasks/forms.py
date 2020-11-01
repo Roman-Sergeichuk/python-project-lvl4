@@ -1,5 +1,6 @@
 from django import forms
-from tasks.models import TaskStatus, Task, Tag
+
+from tasks.models import Tag, Task, TaskStatus
 
 
 class TaskForm(forms.ModelForm):

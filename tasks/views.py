@@ -1,12 +1,11 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from tasks.forms import TaskStatusForm, TaskForm, TagForm
-from tasks.models import Task, TaskStatus, Tag
-from tasks.filters import TaskFilter
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView
 
+from tasks.filters import TaskFilter
+from tasks.models import Tag, Task, TaskStatus
 
 NEW = 'Новая'
 
@@ -32,21 +31,6 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
 
 @login_required
-def create_task(request):
-    if request.method == 'POST':
-        form = TaskForm(request.POST, initial={'status': get_object_or_404(TaskStatus, name=NEW)})
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.creator = request.user
-            task.save()
-            form.save_m2m()
-            return redirect(reverse('task_detail', kwargs={'pk': task.pk}))
-    else:
-        form = TaskForm(initial={'status': get_object_or_404(TaskStatus, name=NEW)})
-        return render(request, 'create_task.html', {'form': form})
-
-
-@login_required
 def task_detail(request, pk):
     task = get_object_or_404(Task, pk=pk)
     return render(request, 'task_detail.html', {'task': task})
@@ -59,39 +43,10 @@ def task_list(request):
 
 
 @login_required
-def update_task(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    if request.method == 'POST':
-        form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.creator = request.user
-            task.save()
-            form.save_m2m()
-            return redirect(reverse('task_detail', kwargs={'pk': task.pk}))
-    else:
-        form = TaskForm(instance=task)
-        return render(request, 'update_task.html', {'form': form})
-
-
-@login_required
 def delete_task(request, pk):
     task = get_object_or_404(Task, pk=pk)
     task.delete()
     return redirect(reverse('task_list'))
-
-
-# @login_required
-# def create_status(request):
-#     if request.method == 'POST':
-#         form = TaskStatusForm(request.POST)
-#         if form.is_valid():
-#             status = form.save(commit=False)
-#             status.save()
-#             return redirect(reverse('status_list'))
-#     else:
-#         form = TaskStatusForm()
-#         return render(request, 'create_status.html', {'form': form})
 
 
 class TaskStatusCreate(LoginRequiredMixin, CreateView):
@@ -113,30 +68,11 @@ def status_detail(request, pk):
     return render(request, 'status_detail.html', {'status': status})
 
 
-# @login_required
-# def update_status(request, pk):
-#     status = get_object_or_404(TaskStatus, pk=pk)
-#     if request.method == 'POST':
-#         form = TaskStatusForm(request.POST, instance=status)
-#         if form.is_valid():
-#             status = form.save(commit=False)
-#             status.save()
-#             return redirect(reverse('status_list'))
-#     else:
-#         form = TaskStatusForm(instance=status)
-#         return render(request, 'update_status.html', {'form': form})
-
-
 class TaskStatusUpdate(LoginRequiredMixin, UpdateView):
     model = TaskStatus
     fields = '__all__'
     success_url = reverse_lazy('status_list')
     template_name = 'update_status.html'
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(TaskStatusUpdate, self).get_context_data(**kwargs)
-    #     context['task_statuses'] = TaskStatus.objects.all()
-    #     return context
 
 
 @login_required
@@ -144,19 +80,6 @@ def delete_status(request, pk):
     status = get_object_or_404(TaskStatus, pk=pk)
     status.delete()
     return redirect(reverse('status_list'))
-
-
-# @login_required
-# def create_tag(request):
-#     if request.method == 'POST':
-#         form = TagForm(request.POST)
-#         if form.is_valid():
-#             tag = form.save(commit=False)
-#             tag.save()
-#             return redirect(reverse('tag_list'))
-#     else:
-#         form = TaskStatusForm()
-#         return render(request, 'create_tag.html', {'form': form})
 
 
 class TagCreate(LoginRequiredMixin, CreateView):
