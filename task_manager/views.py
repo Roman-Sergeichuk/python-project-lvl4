@@ -10,7 +10,7 @@ def index(request):
 
 class RegisterFormView(FormView):
     form_class = UserCreationForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('login')
     template_name = "registration/register.html"
 
     def form_valid(self, form):
