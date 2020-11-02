@@ -5,7 +5,7 @@ lint:
 	@poetry run flake8 --exclude=*migrations/* task_manager
 
 test:
-	@poetry run coverage run --source=task_manager --omit=*/migrations/* manage.py test --settings=task_manager.settings
+	@poetry run coverage run manage.py test
 	@poetry run coverage xml
 
 selfcheck:

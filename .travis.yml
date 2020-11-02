@@ -26,4 +26,4 @@ script:
   - make check
 
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
