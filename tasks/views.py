@@ -12,17 +12,23 @@ NEW = 'Новая'
 COMPLETED = 'Завершена'
 
 
-class TaskCreate(LoginRequiredMixin, CreateView):
+class TaskCreate(CreateView):
     model = Task
-    fields = '__all__'
+    fields = ['name', 'description', 'status', 'assigned_to', 'tags']
     template_name = 'create_task.html'
-    success_url = reverse_lazy('task_list')
+
+    def get_success_url(self):
+        return reverse('task_detail', kwargs={'pk': self.object.pk})
 
     def get_initial(self, *args, **kwargs):
         initial = super(TaskCreate, self).get_initial(**kwargs)
         initial['creator'] = self.request.user
         initial['status'] = get_object_or_404(TaskStatus, name=NEW)
         return initial
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
 class TaskUpdate(LoginRequiredMixin, UpdateView):
