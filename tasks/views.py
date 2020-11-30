@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
 from django.views import generic
+from django.contrib.messages.views import SuccessMessageMixin
 
 from tasks.filters import TaskFilter
 from tasks.models import Tag, Task, TaskStatus
@@ -12,7 +13,7 @@ NEW = 'Новая'
 COMPLETED = 'Завершена'
 
 
-class TaskCreate(CreateView):
+class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['name', 'description', 'status', 'assigned_to', 'tags']
     template_name = 'create_task.html'
