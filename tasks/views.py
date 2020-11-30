@@ -38,10 +38,10 @@ def task_detail(request, pk):
     return render(request, 'task_detail.html', {'task': task})
 
 
-@login_required
-def task_list(request):
-    f = TaskFilter(request.GET, queryset=Task.objects.all())
-    return render(request, 'task_list.html', {'filter': f})
+# @login_required
+# def task_list(request):
+#     f = TaskFilter(request.GET, queryset=Task.objects.all())
+#     return render(request, 'task_list.html', {'filter': f})
 
 
 class TaskListView(generic.ListView):

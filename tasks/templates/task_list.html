@@ -2,12 +2,13 @@
 {% load bootstrap4 %}
 {% block content %}
 
-<div class="row">
+
     <form class="form-inline" method="get">
+
                 {% bootstrap_form filter.form %}
         <input type="submit" value="Найти">
     </form>
-</div>
+
 
     <h1>Список задач</h1>
 

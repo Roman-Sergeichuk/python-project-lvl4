@@ -57,6 +57,7 @@ class Task(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
+        blank=True,
         verbose_name='Теги')
 
     def __str__(self):
