@@ -16,11 +16,6 @@ check: selfcheck test lint
 deploy:
 	git push https://git.heroku.com/taskmanager-rs.git
 
-public:
-	@poetry build
-	@poetry config repositories.dist https://test.pypi.org/legacy/
-	@poetry publish -r dist
-
 migrate:
 	@poetry run python manage.py makemigrations
 	@poetry run python manage.py migrate

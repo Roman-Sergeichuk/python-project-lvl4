@@ -2,11 +2,45 @@
 {% load bootstrap4 %}
 {% block content %}
 
-    <form method="get">
-        {% bootstrap_form filter.form %}
+<div class="row">
+    <form class="form-inline" method="get">
+                {% bootstrap_form filter.form %}
         <input type="submit" value="Найти">
     </form>
-    {% for obj in filter.qs %}
-<a class="p-2 text-dark" href="{% url 'task_detail' obj.id %}">{{ obj.name }}</a> <br />
-    {% endfor %}
+</div>
+
+    <h1>Список задач</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Название задачи</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Автор</th>
+                <th scope="col">Исполнитель</th>
+                <th scope="col">Теги</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for task in filter.qs %}
+                <th scope="row">
+                <a href="{% url 'task_detail' task.id %}">{{ task.name }}</a>
+                </th>
+                <td>{{ task.status }}</td>
+                <td>{{ task.creator }}</td>
+                <td>{{ task.assigned_to }}</td>
+                <td>
+                    {% for tag in task.tags.all %}
+                    <span class="badge badge-dark">{{tag}}</span>
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'update_task' task.id %}" class="btn btn-primary">Редактировать</a>
+                    <a href="{% url 'delete_task' task.id %}" class="btn btn-danger">Удалить</a>
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
 {% endblock %}

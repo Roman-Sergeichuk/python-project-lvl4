@@ -3,11 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
+from django.views import generic
 
 from tasks.filters import TaskFilter
 from tasks.models import Tag, Task, TaskStatus
 
 NEW = 'Новая'
+COMPLETED = 'Завершена'
 
 
 class TaskCreate(LoginRequiredMixin, CreateView):
@@ -40,6 +42,29 @@ def task_detail(request, pk):
 def task_list(request):
     f = TaskFilter(request.GET, queryset=Task.objects.all())
     return render(request, 'task_list.html', {'filter': f})
+
+
+class TaskListView(generic.ListView):
+    template_name = 'task_list.html'
+    context_object_name = 'task_list'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter'] = TaskFilter(
+            self.request.GET,
+            queryset=self.get_queryset(),
+        )
+        return context
+
+    def get_queryset(self):
+        if self.request.GET:
+            parameters = self.request.GET
+            filters = {}
+            for key, value in parameters.items():
+                if value:
+                    filters[key] = value
+            return Task.objects.filter(**filters)
+        return Task.objects.filter(assigned_to=self.request.user).exclude(status__name=COMPLETED)  # noqa: E501
 
 
 @login_required
