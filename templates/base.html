@@ -51,9 +51,8 @@
     <a class="p-2 text-dark" href="{% url 'status_list' %}">Статусы</a>
       {% endif %}
     <a class="p-2 text-dark" href="{% url 'tag_list' %}">Теги</a>
-
+    <a class="ml-5 text-success">Привет, {{request.user.username}}</a>
   </nav>
-      <a class="p-2 text-success" href="#">Привет, {{request.user.username}}</a>
       <a class="btn btn-outline-primary" href="{% url 'logout' %}?next={% url 'login' %}">Выход</a>
   {% else %}
   <a class="btn btn-outline-primary" href="{% url 'login' %}">Войти</a>
