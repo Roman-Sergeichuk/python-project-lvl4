@@ -44,19 +44,19 @@
     <a href="{% url 'index' %}">Менеджер задач</a>
   </h4>
       {% if user.is_authenticated %}
-  <nav class="my-2 my-md-0 mr-md-3">
+  <nav class="my-2 my-md-0 mr-md-3 text-success">
     <a class="p-2 text-dark" href="{% url 'create_task' %}">Создать задачу</a>
     <a class="p-2 text-dark" href="{% url 'task_list' %}">Задачи</a>
       {% if user.is_staff %}
     <a class="p-2 text-dark" href="{% url 'status_list' %}">Статусы</a>
       {% endif %}
-    <a class="p-2 text-dark" href="{% url 'tag_list' %}">Теги</a>
-    <a class="ml-5 text-success">Привет, {{request.user.username}}</a>
+    <a class="p-2 mr-5 text-dark" href="{% url 'tag_list' %}">Теги</a>
+    Привет, {{request.user.username}}
   </nav>
       <a class="btn btn-outline-primary" href="{% url 'logout' %}?next={% url 'login' %}">Выход</a>
   {% else %}
   <a class="btn btn-outline-primary" href="{% url 'login' %}">Войти</a>
-  <a class="btn btn-outline-primary" href="{% url 'register' %}?next={% url 'login' %}">Зарегистрироваться</a>
+  <a class="btn btn-outline-primary" href="{% url 'register' %}">Зарегистрироваться</a>
   {% endif %}
 </div>
 

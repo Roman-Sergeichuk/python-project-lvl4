@@ -2,14 +2,17 @@
 {% load bootstrap4 %}
 {% block content %}
 
-
-<div class="p-2 text-dark">
-    <div class="col-md-6">
-        <div class="text-left">
-        <br>{{ tag.name }}
-        </div>
-        <a href="{% url 'update_tag' tag.id %}" class="badge badge-primary">Редактировать</a>
-        <a href="{% url 'delete_tag' tag.id %}" class="badge badge-danger">Удалить</a>
-    </div>
-</div>
+<table class="table table-striped text-right">
+    <tbody>
+        <tr>
+            <th scope="row">
+            <p>{{ tag.name }}</p>
+            </th>
+            <td>
+                <a href="{% url 'update_tag' tag.id %}" class="btn btn-primary">Редактировать</a>
+                <a href="{% url 'delete_tag' tag.id %}" class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
 {% endblock %}

@@ -5,16 +5,19 @@
 <div class="card-header">
     <a href="{% url 'create_status' %}" class="btn btn-outline-primary">Добавить статус</a>
 </div>
-    {% for status in statuses %}
-<div class="p-2 text-dark">
-    <div class="col-md-6">
-        <div class="text-left">
-            <br><a href="{% url 'status_detail' status.id %}">{{ status.name }}</a>
-        </div>
-        <a href="{% url 'update_status' status.id %}" class="badge badge-primary">Редактировать</a>
-        <a href="{% url 'delete_status' status.id %}" class="badge badge-danger">Удалить</a>
-    </div>
-</div>
-
-{% endfor %}
+    <table class="table table-striped text-right">
+        <tbody>
+            <tr>
+                {% for status in statuses %}
+                <th scope="row">
+                <a href="{% url 'status_detail' status.id %}">{{ status.name }}</a>
+                </th>
+                <td>
+                    <a href="{% url 'update_status' status.id %}" class="btn btn-primary">Редактировать</a>
+                    <a href="{% url 'delete_status' status.id %}" class="btn btn-danger">Удалить</a>
+                </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
 {% endblock %}

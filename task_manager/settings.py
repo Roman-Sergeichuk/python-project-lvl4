@@ -140,7 +140,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'tasks/static'),
 )
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/tasks/'
 
 ROLLBAR = {
     'access_token': os.getenv('ROLLBAR_ACCESS_TOKEN'),

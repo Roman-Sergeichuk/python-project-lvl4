@@ -5,16 +5,19 @@
 <div class="card-header">
     <a href="{% url 'create_tag' %}" class="btn btn-outline-primary">Добавить тег</a>
 </div>
-    {% for tag in tags %}
-<div class="p-2 text-dark">
-    <div class="col-md-6">
-        <div class="text-left">
-            <br><a href="{% url 'tag_detail' tag.id %}">{{ tag.name }}</a>
-        </div>
-        <a href="{% url 'update_tag' tag.id %}" class="badge badge-primary">Редактировать</a>
-        <a href="{% url 'delete_tag' tag.id %}" class="badge badge-danger">Удалить</a>
-    </div>
-</div>
-
-{% endfor %}
+<table class="table table-striped text-right">
+    <tbody>
+        <tr>
+            {% for tag in tags %}
+            <th scope="row">
+            <a href="{% url 'tag_detail' tag.id %}">{{ tag.name }}</a>
+            </th>
+            <td>
+                <a href="{% url 'update_tag' tag.id %}" class="btn btn-primary">Редактировать</a>
+                <a href="{% url 'delete_tag' tag.id %}" class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
 {% endblock %}
