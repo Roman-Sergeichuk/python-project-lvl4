@@ -30,6 +30,9 @@ class Tag(models.Model):
         return self.name
 
 
+
+
+
 class Task(models.Model):
 
     name = models.CharField(
@@ -42,7 +45,7 @@ class Task(models.Model):
     )
     status = models.ForeignKey(
         TaskStatus,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name='Статус')
     creator = models.ForeignKey(
         User,
@@ -52,7 +55,7 @@ class Task(models.Model):
     assigned_to = models.ForeignKey(
         User,
         related_name='assigned_to',
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         verbose_name='Исполнитель'
     )
     tags = models.ManyToManyField(
@@ -60,8 +63,16 @@ class Task(models.Model):
         blank=True,
         verbose_name='Теги')
 
+    def default_value(self):
+        return self.creator
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('task_detail', args=[str(self.pk)])
+
+    def save(self, *args, **kwargs):
+        if not self.assigned_to:
+            self.assigned_to = self.creator
+        super().save(*args, **kwargs)
