@@ -121,7 +121,27 @@ class TagCreate(LoginRequiredMixin, CreateView):
     template_name = 'create_tag.html'
 
 
+class TagUpdate(LoginRequiredMixin, UpdateView):
+    model = Tag
+    fields = '__all__'
+    success_url = reverse_lazy('tag_list')
+    template_name = 'update_tag.html'
+
+
+@login_required
+def delete_tag(request, pk):
+    tag = get_object_or_404(Tag, pk=pk)
+    tag.delete()
+    return redirect(reverse('tag_list'))
+
+
 @login_required
 def tag_list(request):
     tags = Tag.objects.all()
     return render(request, 'tag_list.html', {'tags': tags})
+
+
+@login_required
+def tag_detail(request, pk):
+    tag = get_object_or_404(Tag, pk=pk)
+    return render(request, 'tag_detail.html', {'tag': tag})
