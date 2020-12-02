@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -74,11 +74,12 @@ class TaskListView(generic.ListView):
         return Task.objects.filter(assigned_to=self.request.user).exclude(status__name=COMPLETED)  # noqa: E501
 
 
-@login_required
-def delete_task(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    task.delete()
-    return redirect(reverse('task_list'))
+class TaskDelete(LoginRequiredMixin, DeleteView):
+    model = Task
+    success_url = reverse_lazy('task_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 
 class TaskStatusCreate(LoginRequiredMixin, CreateView):
@@ -107,11 +108,12 @@ class TaskStatusUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'update_status.html'
 
 
-@login_required
-def delete_status(request, pk):
-    status = get_object_or_404(TaskStatus, pk=pk)
-    status.delete()
-    return redirect(reverse('status_list'))
+class TaskStatusDelete(LoginRequiredMixin, DeleteView):
+    model = TaskStatus
+    success_url = reverse_lazy('status_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 
 class TagCreate(LoginRequiredMixin, CreateView):
@@ -128,11 +130,12 @@ class TagUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'update_tag.html'
 
 
-@login_required
-def delete_tag(request, pk):
-    tag = get_object_or_404(Tag, pk=pk)
-    tag.delete()
-    return redirect(reverse('tag_list'))
+class TagDelete(LoginRequiredMixin, DeleteView):
+    model = Tag
+    success_url = reverse_lazy('tag_list')
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
 
 
 @login_required
