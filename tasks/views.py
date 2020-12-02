@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
-from django.contrib.messages.views import SuccessMessageMixin
+
 
 from tasks.filters import TaskFilter
 from tasks.models import Tag, Task, TaskStatus
@@ -39,10 +39,15 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('task_list')
 
 
-@login_required
-def task_detail(request, pk):
-    task = get_object_or_404(Task, pk=pk)
-    return render(request, 'task_detail.html', {'task': task})
+class TaskDetail(generic.DetailView):
+    model = Task
+    template_name = "task_detail.html"
+
+
+# @login_required
+# def task_detail(request, pk):
+#     task = get_object_or_404(Task, pk=pk)
+#     return render(request, 'task_detail.html', {'task': task})
 
 
 # @login_required
@@ -52,8 +57,9 @@ def task_detail(request, pk):
 
 
 class TaskListView(generic.ListView):
+    model = Task
     template_name = 'task_list.html'
-    context_object_name = 'task_list'
+    context_object_name = 'tasks'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,16 +95,28 @@ class TaskStatusCreate(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('status_list')
 
 
-@login_required
-def status_list(request):
-    statuses = TaskStatus.objects.all()
-    return render(request, 'status_list.html', {'statuses': statuses})
+class TaskStatusList(generic.ListView):
+    model = TaskStatus
+    template_name = 'status_list.html'
+    context_object_name = 'statuses'
 
 
-@login_required
-def status_detail(request, pk):
-    status = get_object_or_404(TaskStatus, pk=pk)
-    return render(request, 'status_detail.html', {'status': status})
+# @login_required
+# def status_list(request):
+#     statuses = TaskStatus.objects.all()
+#     return render(request, 'status_list.html', {'statuses': statuses})
+
+
+# @login_required
+# def task_status_detail(request, pk):
+#     status = get_object_or_404(TaskStatus, pk=pk)
+#     return render(request, 'status_detail.html', {'status': status})
+
+
+class TaskStatusDetail(LoginRequiredMixin, generic.DetailView):
+    model = TaskStatus
+    template_name = "status_detail.html"
+    context_object_name = 'status'
 
 
 class TaskStatusUpdate(LoginRequiredMixin, UpdateView):
@@ -138,13 +156,24 @@ class TagDelete(LoginRequiredMixin, DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-@login_required
-def tag_list(request):
-    tags = Tag.objects.all()
-    return render(request, 'tag_list.html', {'tags': tags})
+class TagList(LoginRequiredMixin, generic.ListView):
+    model = Tag
+    template_name = 'tag_list.html'
+    context_object_name = 'tags'
 
 
-@login_required
-def tag_detail(request, pk):
-    tag = get_object_or_404(Tag, pk=pk)
-    return render(request, 'tag_detail.html', {'tag': tag})
+# @login_required
+# def tag_list(request):
+#     tags = Tag.objects.all()
+#     return render(request, 'tag_list.html', {'tags': tags})
+
+
+# @login_required
+# def tag_detail(request, pk):
+#     tag = get_object_or_404(Tag, pk=pk)
+#     return render(request, 'tag_detail.html', {'tag': tag})
+
+
+class TagDetail(LoginRequiredMixin, generic.DetailView):
+    model = Tag
+    template_name = "tag_detail.html"
