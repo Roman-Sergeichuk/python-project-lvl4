@@ -3,8 +3,9 @@
 {% block content %}
 
 <div class="card-header">
-    <a href="{% url 'create_status' %}" class="btn btn-outline-primary">Добавить статус</a>
+    <a href="{% url 'create_status' %}" class="btn btn-primary">Добавить статус</a>
 </div>
+    {% if statuses.count %}
     <table class="table table-striped text-right">
         <tbody>
             <tr>
@@ -20,4 +21,7 @@
         </tbody>
         {% endfor %}
     </table>
+    {% else %}
+<h3 class="text-center">Статусы отсутствуют</h3>
+{% endif %}
 {% endblock %}

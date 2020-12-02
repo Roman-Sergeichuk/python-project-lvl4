@@ -45,7 +45,6 @@
   </h4>
       {% if user.is_authenticated %}
   <nav class="my-2 my-md-0 mr-md-3 text-success">
-    <a class="p-2 text-dark" href="{% url 'create_task' %}">Создать задачу</a>
     <a class="p-2 text-dark" href="{% url 'task_list' %}">Задачи</a>
       {% if user.is_staff %}
     <a class="p-2 text-dark" href="{% url 'status_list' %}">Статусы</a>

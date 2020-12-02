@@ -2,15 +2,15 @@
 {% load bootstrap4 %}
 {% block content %}
 
-
+    <h2>Найти задачи</h2>
     <form class="form-inline" method="get">
 
                 {% bootstrap_form filter.form %}
         <input type="submit" value="Найти">
     </form>
 
-
-    <h1>Список задач</h1>
+    <a href="{% url 'create_task' %}" class="btn btn-primary">Создать задачу</a>
+    <h2>Список задач</h2>
 
     <table class="table table-striped">
         <thead>
@@ -23,8 +23,9 @@
             </tr>
         </thead>
         <tbody>
+            {% if filter.qs.count %}
+            {% for task in filter.qs %}
             <tr>
-                {% for task in filter.qs %}
                 <th scope="row">
                 <a href="{% url 'task_detail' task.id %}">{{ task.name }}</a>
                 </th>
@@ -41,7 +42,11 @@
                     <a href="{% url 'delete_task' task.id %}" class="btn btn-danger">Удалить</a>
                 </td>
             </tr>
+            {% endfor %}
+        {% else %}
+        <td colspan="5">Задачи отсутствуют</td>
+        {% endif %}
         </tbody>
-        {% endfor %}
+
     </table>
 {% endblock %}
