@@ -56,6 +56,8 @@ class TestStatusCRUD(TestCase):
         client = Client()
         User.objects.create_user(username=USERNAME, password=PASSWORD)
         user = User.objects.get(username=USERNAME)
+        user.is_staff = True
+        user.save()
         client.force_login(user)
         response = client.post(STATUS_CREATE_URL, STATUS_DATA)
         status_in_db = TaskStatus.objects.get(name=STATUS_NAME)
@@ -66,6 +68,8 @@ class TestStatusCRUD(TestCase):
         client = Client()
         User.objects.create_user(username=USERNAME, password=PASSWORD)
         user = User.objects.get(username=USERNAME)
+        user.is_staff = True
+        user.save()
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
@@ -79,6 +83,8 @@ class TestStatusCRUD(TestCase):
         client = Client()
         User.objects.create_user(username=USERNAME, password=PASSWORD)
         user = User.objects.get(username=USERNAME)
+        user.is_staff = True
+        user.save()
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
@@ -181,6 +187,8 @@ class URLSTests(TestCase):
         client = Client()
         User.objects.create_user(username=USERNAME, password=PASSWORD)
         user = User.objects.get(username=USERNAME)
+        user.is_staff = True
+        user.save()
         client.force_login(user)
         TaskStatus.objects.create(name=STATUS_NAME)
         Tag.objects.create(name=TAG_NAME)

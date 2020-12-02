@@ -1,5 +1,5 @@
 from django.urls import path
-
+from django.contrib.admin.views.decorators import staff_member_required
 from . import views
 
 urlpatterns = [
@@ -9,11 +9,11 @@ urlpatterns = [
     path('<int:pk>/', views.task_detail, name='task_detail'),
     path('<int:pk>/update', views.TaskUpdate.as_view(), name='update_task'),
     path('<int:pk>/delete', views.delete_task, name='delete_task'),
-    path('statuses/new/', views.TaskStatusCreate.as_view(), name='create_status'),  # noqa: E501
-    path('statuses/', views.status_list, name='status_list'),
-    path('statuses/<int:pk>', views.status_detail, name='status_detail'),
-    path('statuses/<int:pk>/update', views.TaskStatusUpdate.as_view(), name='update_status'),  # noqa: E501
-    path('statuses/<int:pk>/delete', views.delete_status, name='delete_status'),  # noqa: E501
+    path('statuses/new/', staff_member_required()(views.TaskStatusCreate.as_view()), name='create_status'),  # noqa: E501
+    path('statuses/', staff_member_required()(views.status_list), name='status_list'),  # noqa: E501
+    path('statuses/<int:pk>', staff_member_required()(views.status_detail), name='status_detail'),  # noqa: E501
+    path('statuses/<int:pk>/update', staff_member_required()(views.TaskStatusUpdate.as_view()), name='update_status'),  # noqa: E501
+    path('statuses/<int:pk>/delete', staff_member_required()(views.delete_status), name='delete_status'),  # noqa: E501
     path('tags/', views.tag_list, name='tag_list'),
     path('tags/new/', views.TagCreate.as_view(), name='create_tag'),
 ]
