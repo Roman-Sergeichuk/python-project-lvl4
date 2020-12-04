@@ -3,7 +3,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from . import views
 
 urlpatterns = [
-    # path('', views.task_list, name='task_list'),
     path('', views.TaskListView.as_view(), name='task_list'),
     path('new/', views.TaskCreate.as_view(), name='create_task'),
     path('<int:pk>/', views.TaskDetail.as_view(), name='task_detail'),

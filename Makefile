@@ -28,7 +28,10 @@ start:
 
 prepare: collectstatic migrate
 
+requirements:
+	python3 -m poetry export -f requirements.txt -o requirements.txt
 
 
 
-.PHONY : install lint test check selfcheck deploy public migrate start collectstatic prepare
+
+.PHONY : install lint test check selfcheck deploy public migrate start collectstatic prepare requirements

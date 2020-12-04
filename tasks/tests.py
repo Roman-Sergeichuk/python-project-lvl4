@@ -20,6 +20,9 @@ STATUS_DELETE_URL_NAME = 'delete_status'
 STATUS_DATA = {'name': 'Новая'}
 STATUS_NAME = STATUS_DATA['name']
 TAG_CREATE_URL = reverse_lazy('create_tag')
+TAG_UPDATE_URL_NAME = 'update_tag'
+TAG_DELETE_URL_NAME = 'delete_tag'
+
 TAG_LIST_URL = reverse_lazy('tag_list')
 TAG_DATA = {'name': 'new_tag'}
 TAG_NAME = TAG_DATA['name']
@@ -94,7 +97,7 @@ class TestStatusCRUD(TestCase):
         self.assertEqual(len(TaskStatus.objects.all()), 0)
 
 
-class TestTagCreate(TestCase):
+class TestTagCRUD(TestCase):
 
     def test_create_tag(self):
         client = Client()
@@ -105,6 +108,31 @@ class TestTagCreate(TestCase):
         tag_in_db = Tag.objects.get(name=TAG_NAME)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(TAG_NAME, tag_in_db.name)
+
+    def test_update_tag(self):
+        client = Client()
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
+        user = User.objects.get(username=USERNAME)
+        client.force_login(user)
+        Tag.objects.create(name='old_name')
+        old_tag = Tag.objects.get(name='old_name')
+        tag_update_url = reverse(TAG_UPDATE_URL_NAME, args=[str(old_tag.pk)])
+        response = client.post(tag_update_url, TAG_DATA)
+        tag_in_db = Tag.objects.get(pk=old_tag.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(TAG_NAME, tag_in_db.name)
+
+    def test_delete_tag(self):
+        client = Client()
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
+        user = User.objects.get(username=USERNAME)
+        client.force_login(user)
+        Tag.objects.create(name='old_name')
+        old_tag = Tag.objects.get(name='old_name')
+        tag_delete_url = reverse(TAG_DELETE_URL_NAME, args=[str(old_tag.pk)])  # noqa: E501
+        response = client.get(tag_delete_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(Tag.objects.all()), 0)
 
 
 class TestTaskCRUD(TestCase):
@@ -199,16 +227,80 @@ class URLSTests(TestCase):
                             assigned_to=User.objects.get(username=USERNAME)
                             )
         status = TaskStatus.objects.get(name=STATUS_NAME)
-        Tag.objects.get(name=TAG_NAME)
+        tag = Tag.objects.get(name=TAG_NAME)
         task = Task.objects.get(name='task1')
         status_detail_url = reverse('status_detail', args=[str(status.pk)])
         task_detail_url = reverse('task_detail', args=[str(task.pk)])
+        tag_detail_url = reverse('tag_detail', args=[str(tag.pk)])
         urls_200_ok = (TASK_LIST_URL, STATUS_LIST_URL, TAG_LIST_URL,
-                       TASK_CREATE_URL, TAG_CREATE_URL, LOGIN_URL, REGISTER_URL,
-                       status_detail_url, task_detail_url)
+                       TASK_CREATE_URL, TAG_CREATE_URL, LOGIN_URL, REGISTER_URL,  # noqa: E501
+                       status_detail_url, task_detail_url, tag_detail_url)
         for url in urls_200_ok:
             response = client.get(url)
             self.assertEqual(response.status_code, 200)
 
 
+class PermissionsTest(TestCase):
 
+    def test_auth_access(self):
+        client = Client()
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
+        TaskStatus.objects.create(name=STATUS_NAME)
+        Tag.objects.create(name=TAG_NAME)
+        Task.objects.create(name='task1',
+                            description='description',
+                            status=TaskStatus.objects.get(name=STATUS_NAME),
+                            creator=User.objects.get(username=USERNAME),
+                            assigned_to=User.objects.get(username=USERNAME)
+                            )
+        status = TaskStatus.objects.get(name=STATUS_NAME)
+        tag = Tag.objects.get(name=TAG_NAME)
+        task = Task.objects.get(name='task1')
+        status_detail_url = reverse('status_detail', args=[str(status.pk)])
+        task_detail_url = reverse('task_detail', args=[str(task.pk)])
+        tag_detail_url = reverse('tag_detail', args=[str(tag.pk)])
+        urls = (
+            STATUS_LIST_URL, TAG_LIST_URL, TASK_CREATE_URL,
+            TAG_CREATE_URL,
+            status_detail_url, task_detail_url, tag_detail_url
+        )
+        for url in urls:
+            response = client.get(url)
+            self.assertEqual(response.status_code, 302)
+
+
+class TestNonAdminPermissions(TestCase):
+
+    def test_should_not_create_status(self):
+        client = Client()
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
+        user = User.objects.get(username=USERNAME)
+        client.force_login(user)
+        response = client.post(STATUS_CREATE_URL, STATUS_DATA)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(TaskStatus.objects.all()), 0)
+
+    def test_should_not_update_status(self):
+        client = Client()
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
+        user = User.objects.get(username=USERNAME)
+        client.force_login(user)
+        TaskStatus.objects.create(name='old_name')
+        old_status = TaskStatus.objects.get(name='old_name')
+        status_url = reverse(STATUS_UPDATE_URL_NAME, args=[str(old_status.pk)])
+        response = client.post(status_url, STATUS_DATA)
+        status_in_db = TaskStatus.objects.get(pk=old_status.pk)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual('old_name', status_in_db.name)
+
+    def test_should_not_delete_status(self):
+        client = Client()
+        User.objects.create_user(username=USERNAME, password=PASSWORD)
+        user = User.objects.get(username=USERNAME)
+        client.force_login(user)
+        TaskStatus.objects.create(name='old_name')
+        old_status = TaskStatus.objects.get(name='old_name')
+        status_delete_url = reverse(STATUS_DELETE_URL_NAME, args=[str(old_status.pk)])  # noqa: E501
+        response = client.get(status_delete_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(TaskStatus.objects.all()), 1)

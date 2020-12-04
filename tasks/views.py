@@ -1,6 +1,5 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views import generic
@@ -39,24 +38,12 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('task_list')
 
 
-class TaskDetail(generic.DetailView):
+class TaskDetail(LoginRequiredMixin, generic.DetailView):
     model = Task
     template_name = "task_detail.html"
 
 
-# @login_required
-# def task_detail(request, pk):
-#     task = get_object_or_404(Task, pk=pk)
-#     return render(request, 'task_detail.html', {'task': task})
-
-
-# @login_required
-# def task_list(request):
-#     f = TaskFilter(request.GET, queryset=Task.objects.all())
-#     return render(request, 'task_list.html', {'filter': f})
-
-
-class TaskListView(generic.ListView):
+class TaskListView(LoginRequiredMixin, generic.ListView):
     model = Task
     template_name = 'task_list.html'
     context_object_name = 'tasks'
@@ -95,22 +82,10 @@ class TaskStatusCreate(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('status_list')
 
 
-class TaskStatusList(generic.ListView):
+class TaskStatusList(LoginRequiredMixin, generic.ListView):
     model = TaskStatus
     template_name = 'status_list.html'
     context_object_name = 'statuses'
-
-
-# @login_required
-# def status_list(request):
-#     statuses = TaskStatus.objects.all()
-#     return render(request, 'status_list.html', {'statuses': statuses})
-
-
-# @login_required
-# def task_status_detail(request, pk):
-#     status = get_object_or_404(TaskStatus, pk=pk)
-#     return render(request, 'status_detail.html', {'status': status})
 
 
 class TaskStatusDetail(LoginRequiredMixin, generic.DetailView):
@@ -160,18 +135,6 @@ class TagList(LoginRequiredMixin, generic.ListView):
     model = Tag
     template_name = 'tag_list.html'
     context_object_name = 'tags'
-
-
-# @login_required
-# def tag_list(request):
-#     tags = Tag.objects.all()
-#     return render(request, 'tag_list.html', {'tags': tags})
-
-
-# @login_required
-# def tag_detail(request, pk):
-#     tag = get_object_or_404(Tag, pk=pk)
-#     return render(request, 'tag_detail.html', {'tag': tag})
 
 
 class TagDetail(LoginRequiredMixin, generic.DetailView):
