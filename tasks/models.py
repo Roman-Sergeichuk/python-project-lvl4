@@ -72,7 +72,3 @@ class Task(models.Model):
     def get_absolute_url(self):
         return reverse('task_detail', args=[str(self.pk)])
 
-    def save(self, *args, **kwargs):
-        if not self.assigned_to:
-            self.assigned_to = self.creator
-        super().save(*args, **kwargs)
