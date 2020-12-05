@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.contrib.messages.views import SuccessMessageMixin
 
 from tasks.filters import TaskFilter
 from tasks.models import Tag, Task, TaskStatus
@@ -108,11 +109,17 @@ class TaskStatusDelete(LoginRequiredMixin, DeleteView):
         return self.post(request, *args, **kwargs)
 
 
-class TagCreate(LoginRequiredMixin, CreateView):
+class TagCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Tag
     fields = '__all__'
     success_url = reverse_lazy('tag_list')
     template_name = 'create_tag.html'
+    error_message = 'Такой тег уже существует'
+
+    def form_invalid(self, form):
+        # messages.error(self.request, self.error_message)
+        return super().form_invalid(form)
+
 
 
 class TagUpdate(LoginRequiredMixin, UpdateView):

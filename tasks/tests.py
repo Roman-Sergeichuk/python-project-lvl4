@@ -5,16 +5,21 @@ from django.urls import reverse, reverse_lazy
 
 from tasks.models import Tag, Task, TaskStatus
 
+
 REGISTRATION_DATA = {
     'username': 'test_user',
     'password1': 'Efwefwef1223',
     'password2': 'Efwefwef1223'}
+USERNAME = REGISTRATION_DATA['username']
+PASSWORD = REGISTRATION_DATA['password1']
+LOGIN_DATA = {'username': USERNAME, 'password': PASSWORD}
+
+
 INDEX_URL = reverse_lazy('index')
 REGISTER_URL = reverse_lazy('register')
 LOGIN_URL = reverse_lazy('login')
 STATUS_CREATE_URL = reverse_lazy('create_status')
 STATUS_LIST_URL = reverse_lazy('status_list')
-STATUS_DETAIL_URL = reverse_lazy('status_detail', args=[str(1)])
 STATUS_UPDATE_URL_NAME = 'update_status'
 STATUS_DELETE_URL_NAME = 'delete_status'
 STATUS_DATA = {'name': 'Новая'}
@@ -31,9 +36,23 @@ TASK_LIST_URL = reverse_lazy('task_list')
 TASK_UPDATE_URL_NAME = 'update_task'
 TASK_DELETE_URL_NAME = 'delete_task'
 
-USERNAME = REGISTRATION_DATA['username']
-PASSWORD = REGISTRATION_DATA['password1']
-LOGIN_DATA = {'username': USERNAME, 'password': PASSWORD}
+
+def create_user(is_staff):
+    User.objects.create_user(username=USERNAME, password=PASSWORD)
+    user = User.objects.get(username=USERNAME)
+    user.is_staff = is_staff
+    user.save()
+    return user
+
+
+def create_and_get_task():
+    Task.objects.create(name='task1',
+                        description='description',
+                        status=TaskStatus.objects.get(name=STATUS_NAME),
+                        creator=User.objects.get(username=USERNAME),
+                        assigned_to=User.objects.get(username=USERNAME)
+                        )
+    return Task.objects.get(name='task1')
 
 
 class TestRegisterAndLogin(TestCase):
@@ -57,10 +76,7 @@ class TestStatusCRUD(TestCase):
 
     def test_create_status(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
-        user.is_staff = True
-        user.save()
+        user = create_user(is_staff=True)
         client.force_login(user)
         response = client.post(STATUS_CREATE_URL, STATUS_DATA)
         status_in_db = TaskStatus.objects.get(name=STATUS_NAME)
@@ -69,10 +85,7 @@ class TestStatusCRUD(TestCase):
 
     def test_update_status(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
-        user.is_staff = True
-        user.save()
+        user = create_user(is_staff=True)
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
@@ -84,10 +97,7 @@ class TestStatusCRUD(TestCase):
 
     def test_delete_status(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
-        user.is_staff = True
-        user.save()
+        user = create_user(is_staff=True)
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
@@ -101,8 +111,7 @@ class TestTagCRUD(TestCase):
 
     def test_create_tag(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         response = client.post(TAG_CREATE_URL, TAG_DATA)
         tag_in_db = Tag.objects.get(name=TAG_NAME)
@@ -111,8 +120,7 @@ class TestTagCRUD(TestCase):
 
     def test_update_tag(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         Tag.objects.create(name='old_name')
         old_tag = Tag.objects.get(name='old_name')
@@ -124,8 +132,7 @@ class TestTagCRUD(TestCase):
 
     def test_delete_tag(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         Tag.objects.create(name='old_name')
         old_tag = Tag.objects.get(name='old_name')
@@ -141,8 +148,7 @@ class TestTaskCRUD(TestCase):
         client = Client()
         TaskStatus.objects.create(name=STATUS_NAME)
         Tag.objects.create(name=TAG_NAME)
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         status = TaskStatus.objects.get(name=STATUS_NAME)
         tag = Tag.objects.get(name=TAG_NAME)
@@ -161,18 +167,11 @@ class TestTaskCRUD(TestCase):
 
     def test_update_task(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         TaskStatus.objects.create(name=STATUS_NAME)
         Tag.objects.create(name=TAG_NAME)
-        Task.objects.create(name='task1',
-                            description='description',
-                            status=TaskStatus.objects.get(name=STATUS_NAME),
-                            creator=User.objects.get(username=USERNAME),
-                            assigned_to=User.objects.get(username=USERNAME)
-                            )
-        old_task = Task.objects.get(name='task1')
+        old_task = create_and_get_task()
         status = TaskStatus.objects.get(name=STATUS_NAME)
         tag = Tag.objects.get(name=TAG_NAME)
         task_url = reverse(TASK_UPDATE_URL_NAME, args=[str(old_task.pk)])
@@ -191,18 +190,11 @@ class TestTaskCRUD(TestCase):
 
     def test_delete_task(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         TaskStatus.objects.create(name=STATUS_NAME)
         Tag.objects.create(name=TAG_NAME)
-        Task.objects.create(name='task1',
-                            description='description',
-                            status=TaskStatus.objects.get(name=STATUS_NAME),
-                            creator=User.objects.get(username=USERNAME),
-                            assigned_to=User.objects.get(username=USERNAME)
-                            )
-        task = Task.objects.get(name='task1')
+        task = create_and_get_task()
         task_delete_url = reverse(TASK_DELETE_URL_NAME, args=[str(task.pk)])
         response = client.post(task_delete_url)
         self.assertEqual(response.status_code, 302)
@@ -213,22 +205,13 @@ class URLSTests(TestCase):
 
     def test_200_ok(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
-        user.is_staff = True
-        user.save()
+        user = create_user(is_staff=True)
         client.force_login(user)
         TaskStatus.objects.create(name=STATUS_NAME)
         Tag.objects.create(name=TAG_NAME)
-        Task.objects.create(name='task1',
-                            description='description',
-                            status=TaskStatus.objects.get(name=STATUS_NAME),
-                            creator=User.objects.get(username=USERNAME),
-                            assigned_to=User.objects.get(username=USERNAME)
-                            )
+        task = create_and_get_task()
         status = TaskStatus.objects.get(name=STATUS_NAME)
         tag = Tag.objects.get(name=TAG_NAME)
-        task = Task.objects.get(name='task1')
         status_detail_url = reverse('status_detail', args=[str(status.pk)])
         task_detail_url = reverse('task_detail', args=[str(task.pk)])
         tag_detail_url = reverse('tag_detail', args=[str(tag.pk)])
@@ -247,15 +230,9 @@ class PermissionsTest(TestCase):
         User.objects.create_user(username=USERNAME, password=PASSWORD)
         TaskStatus.objects.create(name=STATUS_NAME)
         Tag.objects.create(name=TAG_NAME)
-        Task.objects.create(name='task1',
-                            description='description',
-                            status=TaskStatus.objects.get(name=STATUS_NAME),
-                            creator=User.objects.get(username=USERNAME),
-                            assigned_to=User.objects.get(username=USERNAME)
-                            )
+        task = create_and_get_task()
         status = TaskStatus.objects.get(name=STATUS_NAME)
         tag = Tag.objects.get(name=TAG_NAME)
-        task = Task.objects.get(name='task1')
         status_detail_url = reverse('status_detail', args=[str(status.pk)])
         task_detail_url = reverse('task_detail', args=[str(task.pk)])
         tag_detail_url = reverse('tag_detail', args=[str(tag.pk)])
@@ -273,8 +250,7 @@ class TestNonAdminPermissions(TestCase):
 
     def test_should_not_create_status(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         response = client.post(STATUS_CREATE_URL, STATUS_DATA)
         self.assertEqual(response.status_code, 302)
@@ -282,8 +258,7 @@ class TestNonAdminPermissions(TestCase):
 
     def test_should_not_update_status(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
@@ -295,8 +270,7 @@ class TestNonAdminPermissions(TestCase):
 
     def test_should_not_delete_status(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        user = User.objects.get(username=USERNAME)
+        user = create_user(is_staff=False)
         client.force_login(user)
         TaskStatus.objects.create(name='old_name')
         old_status = TaskStatus.objects.get(name='old_name')
