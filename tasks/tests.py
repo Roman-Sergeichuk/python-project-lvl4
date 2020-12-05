@@ -45,6 +45,15 @@ def create_user(is_staff):
     return user
 
 
+def prepare_db(staff_user=False):
+    TaskStatus.objects.create(name=STATUS_NAME)
+    Tag.objects.create(name=TAG_NAME)
+    status = TaskStatus.objects.get(name=STATUS_NAME)
+    tag = Tag.objects.get(name=TAG_NAME)
+    user = create_user(is_staff=staff_user)
+    return status, tag, user
+
+
 def create_and_get_task():
     Task.objects.create(name='task1',
                         description='description',
@@ -53,6 +62,19 @@ def create_and_get_task():
                         assigned_to=User.objects.get(username=USERNAME)
                         )
     return Task.objects.get(name='task1')
+
+
+def create_task_data():
+    status, tag, user = prepare_db()
+    task_data = {
+        'name': 'task_1',
+        'description': 'description',
+        'status': status.pk,
+        'assigned_to': user.pk,
+        'creator': user.pk,
+        'tags': [tag.pk],
+    }
+    return task_data
 
 
 class TestRegisterAndLogin(TestCase):
@@ -146,13 +168,8 @@ class TestTaskCRUD(TestCase):
 
     def test_create_task(self):
         client = Client()
-        TaskStatus.objects.create(name=STATUS_NAME)
-        Tag.objects.create(name=TAG_NAME)
-        user = create_user(is_staff=False)
-        client.force_login(user)
-        status = TaskStatus.objects.get(name=STATUS_NAME)
-        tag = Tag.objects.get(name=TAG_NAME)
-        task_create_data = {
+        status, tag, user = prepare_db()
+        task_data = {
             'name': 'task_1',
             'description': 'description',
             'status': status.pk,
@@ -160,21 +177,17 @@ class TestTaskCRUD(TestCase):
             'creator': user.pk,
             'tags': [tag.pk],
         }
-        response = client.post(TASK_CREATE_URL, task_create_data)
-        task_in_db = Task.objects.get(name=task_create_data['name'])
+        client.force_login(user)
+        response = client.post(TASK_CREATE_URL, task_data)
+        task_in_db = Task.objects.get(name=task_data['name'])
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(task_create_data['name'], task_in_db.name)
+        self.assertEqual(task_data['name'], task_in_db.name)
 
     def test_update_task(self):
         client = Client()
-        user = create_user(is_staff=False)
+        status, tag, user = prepare_db()
         client.force_login(user)
-        TaskStatus.objects.create(name=STATUS_NAME)
-        Tag.objects.create(name=TAG_NAME)
         old_task = create_and_get_task()
-        status = TaskStatus.objects.get(name=STATUS_NAME)
-        tag = Tag.objects.get(name=TAG_NAME)
-        task_url = reverse(TASK_UPDATE_URL_NAME, args=[str(old_task.pk)])
         task_update_data = {
             'name': 'task2',
             'description': 'description',
@@ -183,6 +196,7 @@ class TestTaskCRUD(TestCase):
             'creator': user.pk,
             'tags': [tag.pk],
         }
+        task_url = reverse(TASK_UPDATE_URL_NAME, args=[str(old_task.pk)])
         response = client.post(task_url, task_update_data)
         task_in_db = Task.objects.get(pk=old_task.pk)
         self.assertEqual(response.status_code, 302)
@@ -190,10 +204,8 @@ class TestTaskCRUD(TestCase):
 
     def test_delete_task(self):
         client = Client()
-        user = create_user(is_staff=False)
+        status, tag, user = prepare_db()
         client.force_login(user)
-        TaskStatus.objects.create(name=STATUS_NAME)
-        Tag.objects.create(name=TAG_NAME)
         task = create_and_get_task()
         task_delete_url = reverse(TASK_DELETE_URL_NAME, args=[str(task.pk)])
         response = client.post(task_delete_url)
@@ -205,13 +217,9 @@ class URLSTests(TestCase):
 
     def test_200_ok(self):
         client = Client()
-        user = create_user(is_staff=True)
+        status, tag, user = prepare_db(staff_user=True)
         client.force_login(user)
-        TaskStatus.objects.create(name=STATUS_NAME)
-        Tag.objects.create(name=TAG_NAME)
         task = create_and_get_task()
-        status = TaskStatus.objects.get(name=STATUS_NAME)
-        tag = Tag.objects.get(name=TAG_NAME)
         status_detail_url = reverse('status_detail', args=[str(status.pk)])
         task_detail_url = reverse('task_detail', args=[str(task.pk)])
         tag_detail_url = reverse('tag_detail', args=[str(tag.pk)])
@@ -225,14 +233,10 @@ class URLSTests(TestCase):
 
 class PermissionsTest(TestCase):
 
-    def test_auth_access(self):
+    def test_non_auth_access(self):
         client = Client()
-        User.objects.create_user(username=USERNAME, password=PASSWORD)
-        TaskStatus.objects.create(name=STATUS_NAME)
-        Tag.objects.create(name=TAG_NAME)
+        status, tag, user = prepare_db()
         task = create_and_get_task()
-        status = TaskStatus.objects.get(name=STATUS_NAME)
-        tag = Tag.objects.get(name=TAG_NAME)
         status_detail_url = reverse('status_detail', args=[str(status.pk)])
         task_detail_url = reverse('task_detail', args=[str(task.pk)])
         tag_detail_url = reverse('tag_detail', args=[str(tag.pk)])
