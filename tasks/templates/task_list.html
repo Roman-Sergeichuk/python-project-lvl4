@@ -3,10 +3,9 @@
 {% block content %}
 
     <h2>Найти задачи</h2>
-    <form class="form-inline" method="get">
-
+    <form class="form-inline " method="get">
                 {% bootstrap_form filter.form %}
-        <input type="submit" value="Найти">
+        <input type="submit" class="btn btn-primary ml-3" value="Найти">
     </form>
 
     <a href="{% url 'create_task' %}" class="btn btn-primary">Создать задачу</a>
