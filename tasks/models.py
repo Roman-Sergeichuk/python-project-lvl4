@@ -10,7 +10,8 @@ class TaskStatus(models.Model):
     name = models.CharField(
         max_length=50, unique=True,
         verbose_name='Статус',
-        help_text='Введите статус'
+        help_text='Введите статус',
+        error_messages={'unique': 'Статус с таким названием уже существует'}
     )
 
     def __str__(self):
@@ -24,16 +25,15 @@ class Tag(models.Model):
     name = models.CharField(
         max_length=50,
         unique=True,
-        verbose_name='Тег')
+        verbose_name='Тег',
+        error_messages={'unique': 'Тег с таким названием уже существует'}
+    )
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('tag_detail', args=[str(self.pk)])
-
-
-
 
 
 class Task(models.Model):
