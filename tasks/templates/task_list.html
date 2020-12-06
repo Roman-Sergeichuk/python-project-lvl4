@@ -22,6 +22,7 @@
                 <th scope="col">Теги</th>
             </tr>
         </thead>
+        {% if user.is_authenticated %}
         <tbody>
             {% if filter.qs.count %}
             {% for task in filter.qs %}
@@ -47,6 +48,7 @@
         <td colspan="5">Задачи отсутствуют</td>
         {% endif %}
         </tbody>
+        {% endif %}
 
     </table>
 {% endblock %}
