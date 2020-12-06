@@ -121,7 +121,6 @@ class TagCreate(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_invalid(form)
 
 
-
 class TagUpdate(LoginRequiredMixin, UpdateView):
     model = Tag
     fields = '__all__'

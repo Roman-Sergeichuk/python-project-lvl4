@@ -19,10 +19,15 @@ from django.urls import include, path
 
 from task_manager import views
 
+
+INDEX = 'index'
+REGISTER = 'register'
+LOGIN = 'login'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
+    path('', views.index, name=INDEX),
     path('accounts/', include('django.contrib.auth.urls')),
-    url(r'^register/$', views.RegisterFormView.as_view(), name='register'),
+    url(r'^register/$', views.RegisterFormView.as_view(), name=REGISTER),
     path('tasks/', include('tasks.urls')),
 ]
