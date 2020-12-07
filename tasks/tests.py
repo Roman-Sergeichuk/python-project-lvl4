@@ -217,7 +217,7 @@ class URLSTests(TestCase):
             self.assertEqual(response.status_code, 200)
 
 
-class PermissionsTest(TestCase):
+class TestPermissions(TestCase):
 
     #  Some resources are not available for non-authenticated user
     def test_non_auth_access(self):
@@ -232,9 +232,6 @@ class PermissionsTest(TestCase):
         for url in urls_302:
             response = client.get(url)
             self.assertEqual(response.status_code, 302)
-
-
-class TestNonAdminPermissions(TestCase):
 
     #  Non-staff user can't create statuses
     def test_should_not_create_status(self):
